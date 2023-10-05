@@ -16,22 +16,19 @@ let M=100; //masa del bloque
 let v_b=45; //velocidad de la bala
 
 let landa=beta/(2*(m+M)*l**2);
-let omega2=g/l;
+let omega=Math.sqrt(g/l);
 
 
 
 function setup(){
-
 
   canvas=createCanvas(windowWidth,windowHeight); //
   frameRate(30); //esto es para que el programa corra a 30 fps
   bloque=new Bloque(-w/2,-h/2, M); //creo el objeto bloque
   cuerda=new Cuerda(0,-200,0,0); //creo el objeto cuerda
   bala=new Bala(v_b,m); //creo el objeto bala
-  
 
 };
-
 
 function draw() {
   translate(windowWidth/2, windowHeight/2); //esto es para que el origen de coordenadas esté en la esquina inferior izquierda.
@@ -41,9 +38,14 @@ function draw() {
   bala.show();
   cuerda.show();
 
-  bloque.move();
-  bala.move();
-  cuerda.move();
+  if(bala.colision()==True){
+    t=0;
+    bloque.move();
+    cuerda.move();
+  } else{
+    bala.move();
+  }
+  
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -68,14 +70,10 @@ let Bloque=function(x,y,m){ //clase bloque
     
     t=t+dt;
 
-    //theta=v_b/(l*Math.sqrt(omega2-landa**2))* Math.exp(-landa*t) *Math.sin(Math.sqrt(omega2-landa**2)  *t);
-    theta= Math.sqrt(omega2)*l*Math.cos(Math.sqrt(omega2)*t)/v_b
+    theta= ((m*v_b)/((m+M)*l*omega))*Math.sin(omega*t)
 
     this.x=l*Math.sin(theta);
-    this.y-l*Math.cos(theta);
-  }
-
-  this.colsion=function(child){
+    this.y=l*Math.cos(theta);
   }
 }
 
@@ -115,4 +113,10 @@ let Bala=function(vx, m){ //clase balas
     this.move=function(){
         xb=xb+this.vxb*dt;
     }
+
+  this.colision=function(){
+    if(xb>=-w/2){
+      return True;
+    }
+  }
 }
