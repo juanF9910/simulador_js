@@ -32,13 +32,16 @@ function draw() {
   background(94, 205, 206); // color que tiene el fondo canvas (gris).
 
   bloque.show();
+  cuerda.show();
   bala.show();
 
-  bloque.move();
-  cuerda.move(bloque.x, bloque.y);
-  bala.move();
 
-  cuerda.show();
+  if (bala.colision()) {
+    bloque.move();
+    cuerda.move(bloque.x, bloque.y);
+  }else{
+    bala.move();
+  }
 };
 
 let Bloque = function (x, y, m) { //clase bloque
@@ -98,11 +101,12 @@ let Bala = function (vx, m) { //clase balas
 
   this.move = function () {
     xb = xb + this.vxb * dt;
+
   }
 
   this.colision = function () {
-    if (xb >= -w / 2) {
-      return True;
+    if (-l+xb >= -w/2) {
+      return true;
     }
   }
 }
