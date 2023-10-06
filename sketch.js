@@ -20,6 +20,7 @@ let omega = Math.sqrt(g / l);
 
 let mSlider, MSlider, v_bSlider, resetButton;
 
+
 function setup() {
 
   canvas = createCanvas(windowWidth, windowHeight); // crea el lienzo
@@ -44,7 +45,6 @@ function setup() {
   resetButton.style('font-size', '20px'); // Cambia el tamaño del texto en el botón
   resetButton.size(120, 40); // Cambia el tamaño del botón en píxeles
   resetButton.position(windowWidth/2-50, 100); // coloca el botón de reinicio en la posición (20, 110)
-
 }
 
 function draw() {
@@ -66,6 +66,7 @@ function draw() {
     bala.move(); // mueve la bala
     bala.show(); // muestra la bala
   }
+
 }
 
 let Bloque = function (x, y, m) { // crea el objeto bloque
