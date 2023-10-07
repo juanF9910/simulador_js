@@ -12,15 +12,16 @@ let bloque; // objeto bloque
 let bala; // objeto bala
 let cuerda; // objeto cuerda
 
-let m = 10; // masa de la bala
-let M = 50; // masa del bloque
-let v_b = 60; // velocidad de la bala
+let m ; // masa de la bala
+let M; // masa del bloque
+let v_b; // velocidad de la bala
 
 let omega = Math.sqrt(g / l);
 
 let mSlider, MSlider, v_bSlider, resetButton;
 
-let ended=false
+let ended=false;
+
 function setup() {
 
   canvas = createCanvas(windowWidth, windowHeight); // crea el lienzo
@@ -40,17 +41,17 @@ function setup() {
   positionSlider(v_bSlider, 'rapidéz bala [m/s]', 20, 80, 250); // Aumenta el último argumento para un mayor ancho del deslizador
   
     // Crea el botón de reinicio
-  resetButton = createButton('Reiniciar'); // crea el botón de reinicio con el texto 'Reiniciar' 
+  resetButton = createButton('Iniciar'); // crea el botón de reinicio con el texto 'Reiniciar' 
   resetButton.mousePressed(resetAnimation); // llama a la función resetAnimation cuando se presiona el botón de reinicio 
   resetButton.style('font-size', '20px'); // Cambia el tamaño del texto en el botón
   resetButton.size(120, 40); // Cambia el tamaño del botón en píxeles
   resetButton.position(windowWidth/2-50, 100); // coloca el botón de reinicio en la posición (20, 110)
   
-    resetButton = createButton('Guardar'); // crea el botón de reinicio con el texto 'Reiniciar' 
+  resetButton = createButton('Guardar'); // crea el botón de reinicio con el texto 'Reiniciar' 
   resetButton.mousePressed(savedata); // llama a la función resetAnimation cuando se presiona el botón de reinicio 
   resetButton.style('font-size', '20px'); // Cambia el tamaño del texto en el botón
   resetButton.size(120, 40); // Cambia el tamaño del botón en píxeles
-  resetButton.position(windowWidth/6-50, 150); // coloca el botón de reinicio en la posición (20, 110)
+  resetButton.position(windowWidth/2+300, 100); // coloca el botón de reinicio en la posición (20, 110)
 
 }
 
@@ -237,15 +238,17 @@ function positionSlider(slider, label, x, y, sliderWidth) {  // crea un deslizad
 }
 
 function resetAnimation() { // reinicia la animación 
+
+  mSlider.value(m); 
+  MSlider.value(M);
+  v_bSlider.value(v_b);
+
   // Restablece los objetos y valores necesarios
   bloque = new Bloque(-w / 2, l - h / 2, M); 
   cuerda = new Cuerda(0, 0);
   bala = new Bala(v_b, m);
 
   // Restablece los deslizadores a sus valores iniciales
-  mSlider.value(m); 
-  MSlider.value(M);
-  v_bSlider.value(v_b);
 }
 
 function savedata() { // reinicia la animación 
