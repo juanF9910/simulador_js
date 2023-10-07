@@ -20,7 +20,7 @@ let omega = Math.sqrt(g / l);
 
 let mSlider, MSlider, v_bSlider, resetButton;
 
-
+let ended=false
 function setup() {
 
   canvas = createCanvas(windowWidth, windowHeight); // crea el lienzo
@@ -38,13 +38,20 @@ function setup() {
 
   v_bSlider = createSlider(0, 100, v_b, 1); // crea el deslizador de la velocidad de la bala con valores entre 0 y 100 y un incremento de 1
   positionSlider(v_bSlider, 'rapidéz bala [m/s]', 20, 80, 250); // Aumenta el último argumento para un mayor ancho del deslizador
-
-  // Crea el botón de reinicio
+  
+    // Crea el botón de reinicio
   resetButton = createButton('Reiniciar'); // crea el botón de reinicio con el texto 'Reiniciar' 
   resetButton.mousePressed(resetAnimation); // llama a la función resetAnimation cuando se presiona el botón de reinicio 
   resetButton.style('font-size', '20px'); // Cambia el tamaño del texto en el botón
   resetButton.size(120, 40); // Cambia el tamaño del botón en píxeles
   resetButton.position(windowWidth/2-50, 100); // coloca el botón de reinicio en la posición (20, 110)
+  
+    resetButton = createButton('Guardar'); // crea el botón de reinicio con el texto 'Reiniciar' 
+  resetButton.mousePressed(savedata); // llama a la función resetAnimation cuando se presiona el botón de reinicio 
+  resetButton.style('font-size', '20px'); // Cambia el tamaño del texto en el botón
+  resetButton.size(120, 40); // Cambia el tamaño del botón en píxeles
+  resetButton.position(windowWidth/6-50, 150); // coloca el botón de reinicio en la posición (20, 110)
+
 }
 
 function draw() {
@@ -60,6 +67,7 @@ function draw() {
   cuerda.show();  // muestra la cuerda
 
   if (bala.colision()) { // si la bala colisiona con el bloque
+    t=0;
     bloque.move(); // mueve el bloque
     cuerda.move(bloque.x, bloque.y); // mueve la cuerda
   } else { // si la bala no colisiona con el bloque
@@ -69,7 +77,7 @@ function draw() {
 
 }
 
-let Bloque = function (x, y, m) { // crea el objeto bloque
+let BloqueV = function (x, y, m, T, H) { // crea el objeto bloque
   this.x = x; // posición en x del bloque 
   this.y = y; // posición en y del bloque 
   this.m = m; // masa del bloque
@@ -77,8 +85,6 @@ let Bloque = function (x, y, m) { // crea el objeto bloque
   let t = 0; // tiempo 
   let theta = 0; // ángulo de oscilación del bloque 
 
-  let H=[];
-  let T=[];
 
   this.show = function () { // muestra el bloque 
     noStroke(); // sin borde 
@@ -86,17 +92,84 @@ let Bloque = function (x, y, m) { // crea el objeto bloque
     rect(this.x, this.y, w, h); // rectángulo con esquinas en (this.x, this.y) y (this.x + w, this.y + h)
   }
 
-  this.move = function () { // mueve el bloque
-    t = t + dt; // incrementa el tiempo en dt
-    T.push(t);
+let iterationCount = 0; // Counter for the number of iterations
 
-    theta = ((m * v_b) / ((m + M) * l * omega)) * Math.sin(omega * t) // calcula el ángulo de oscilación del bloque 
+this.move = function () {
+  if (iterationCount < 100) {
+    T.push(t);
+    theta = ((m * v_b) / ((m + M) * l * omega)) * Math.sin(omega * t); // calcula el ángulo de oscilación del bloque 
 
     this.x = l * Math.sin(theta) - w / 2; // actualiza la posición en x del bloque 
     this.y = l * Math.cos(theta) - h / 2; // actualiza la posición en y del bloque
-    H.push(this.y);
+    H.push(l*(1- Math.cos(theta)));
+    
+    t = t + dt; // incrementa el tiempo en dt
+
+    iterationCount++; // Increment the iteration counter
   }
+
+  // file writer once in the infinite loop
+  else if (iterationCount==100) { 
+
+  const tArray = T; //bloque.getTArray();
+  const hArray = H; //bloque.getHArray();
+  
+  // Combine tArray and hArray into a single array of arrays
+  const combinedData = tArray.map((t, index) => [t, hArray[index]]);
+
+  // Convert combinedData to CSV format
+  const csvContent = combinedData.map(row => row.join(',')).join('\n');
+
+  // Create a Blob containing the CSV data
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+
+  // Create a download link for the Blob
+  const url = URL.createObjectURL(blob);
+
+  // Create an anchor element for the download link
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'data.csv'; // Specify the file name
+
+  // Trigger a click event on the anchor element to start the download
+  a.click();
+
+  // Clean up by revoking the URL object
+  URL.revokeObjectURL(url);
+  iterationCount++;}
 }
+
+}
+
+
+let Bloque = function (x, y, m) {// crea el objeto bloque
+  this.x = x; // posición en x del bloque 
+  this.y = y; // posición en y del bloque 
+  this.m = m; // masa del bloque
+ 
+  let t = 0; // tiempo 
+  let theta = 0; // ángulo de oscilación del bloque
+  
+
+  this.show = function () { // muestra el bloque 
+    noStroke(); // sin borde 
+    fill(139, 69, 19); // Color marrón para el bloque
+    rect(this.x, this.y, w, h); // rectángulo con esquinas en (this.x, this.y) y (this.x + w, this.y + h)
+  }
+
+let iterationCount = 0; // Counter for the number of iterations
+
+this.move = function () {
+
+    theta = ((m * v_b) / ((m + M) * l * omega)) * Math.sin(omega * t); // calcula el ángulo de oscilación del bloque 
+
+    this.x = l * Math.sin(theta) - w / 2; // actualiza la posición en x del bloque 
+    this.y = l * Math.cos(theta) - h / 2; // actualiza la posición en y del bloque
+
+    t = t + dt; // incrementa el tiempo en dt
+}
+}
+
 
 let Cuerda = function (x1, y1) { // crea el objeto cuerda 
   this.x0 = 0; // posición en x del extremo fijo de la cuerda
@@ -166,6 +239,20 @@ function positionSlider(slider, label, x, y, sliderWidth) {  // crea un deslizad
 function resetAnimation() { // reinicia la animación 
   // Restablece los objetos y valores necesarios
   bloque = new Bloque(-w / 2, l - h / 2, M); 
+  cuerda = new Cuerda(0, 0);
+  bala = new Bala(v_b, m);
+
+  // Restablece los deslizadores a sus valores iniciales
+  mSlider.value(m); 
+  MSlider.value(M);
+  v_bSlider.value(v_b);
+}
+
+function savedata() { // reinicia la animación 
+  let H=[];
+  let T=[];
+  // Restablece los objetos y valores necesarios
+  bloque = new BloqueV(-w / 2, l - h / 2, M, T, H); //this function calls the file writer
   cuerda = new Cuerda(0, 0);
   bala = new Bala(v_b, m);
 
