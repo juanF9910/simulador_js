@@ -1,8 +1,8 @@
 let g = 9.8; // gravedad
-let a = 30; // radio principal de la elipse
-let b = 10; // radio secundario de la elipse
-let w = 50; // ancho del bloque
-let h = 50; // alto del bloque
+let a = 40; // radio principal de la elipse
+let b = 15; // radio secundario de la elipse
+let w = 80; // ancho del bloque
+let h = 80; // alto del bloque
 let dt = 1 / 3; // tiempo entre cada frame (en milisegundos)
 let l = 200; // longitud de la cuerda
 let beta = 0.1; // factor de fricción
@@ -57,7 +57,7 @@ function setup() {
 
 function draw() {
   translate(windowWidth / 2, windowHeight / 2); // coloca el origen en el centro
-  background(255); // fondo blanco
+  background(250, 250, 210); // fondo blanco
 
   // Actualiza los valores de M, m y v_b desde los deslizadores
   M = MSlider.value();  // actualiza el valor de M desde el deslizador de la masa del bloque 
@@ -75,7 +75,6 @@ function draw() {
     bala.move(); // mueve la bala
     bala.show(); // muestra la bala
   }
-
 }
 
 let BloqueV = function (x, y, m, T, H) { // crea el objeto bloque
@@ -203,7 +202,7 @@ let Bala = function (vx, m) { // crea el objeto bala
 
   this.show = function () { // muestra la bala
     noStroke(); // sin borde
-    fill(0, 0, 255); // Color azul para la bala
+    fill(212, 175, 55); // Color azul para la bala
     ellipse(-L + xb, l, a, b); // elipse con centro en (-L + xb, l) y radios a y b
   }
 
@@ -252,8 +251,8 @@ function resetAnimation() { // reinicia la animación
 }
 
 function savedata() { // reinicia la animación 
-  let H=[];
-  let T=[];
+  let H=['h'];
+  let T=['t'];
   // Restablece los objetos y valores necesarios
   bloque = new BloqueV(-w / 2, l - h / 2, M, T, H); //this function calls the file writer
   cuerda = new Cuerda(0, 0);
