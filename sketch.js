@@ -11,8 +11,9 @@ let L = 750; // distancia desde donde se dispara la bala
 let bloque; // objeto bloque
 let bala; // objeto bala
 let cuerda; // objeto cuerda
+let soporte; 
 
-let m ; // masa de la bala
+let m; // masa de la bala
 let M; // masa del bloque
 let v_b; // velocidad de la bala
 
@@ -20,16 +21,13 @@ let omega = Math.sqrt(g / l);
 
 let mSlider, MSlider, v_bSlider, resetButton;
 
-let ended=false;
+let ended = false;
+
 
 function setup() {
 
   canvas = createCanvas(windowWidth, windowHeight); // crea el lienzo
   frameRate(200); // establece la velocidad de los frames
-  bloque = new Bloque(-w / 2, l - h / 2, M); // crea el objeto bloque
-  cuerda = new Cuerda(0, 0); // crea el objeto cuerda
-  bala = new Bala(v_b, m); // crea el objeto bala
-
   // Crea los deslizadores con etiquetas en formato LaTeX
   mSlider = createSlider(1, 10, m, 1); // crea el deslizador de la masa de la bala con valores entre 1 y 10 y un incremento de 1 
   positionSlider(mSlider, 'Masa bala [kg]', 20, 20, 250); // Aumenta el último argumento para un mayor ancho del deslizador 
@@ -39,139 +37,156 @@ function setup() {
 
   v_bSlider = createSlider(0, 100, v_b, 1); // crea el deslizador de la velocidad de la bala con valores entre 0 y 100 y un incremento de 1
   positionSlider(v_bSlider, 'rapidéz bala [m/s]', 20, 80, 250); // Aumenta el último argumento para un mayor ancho del deslizador
-  
-    // Crea el botón de reinicio
+
+  // Crea el botón de reinicio
   resetButton = createButton('Iniciar'); // crea el botón de reinicio con el texto 'Reiniciar' 
   resetButton.mousePressed(resetAnimation); // llama a la función resetAnimation cuando se presiona el botón de reinicio 
   resetButton.style('font-size', '20px'); // Cambia el tamaño del texto en el botón
   resetButton.size(120, 40); // Cambia el tamaño del botón en píxeles
-  resetButton.position(windowWidth/2-50, 100); // coloca el botón de reinicio en la posición (20, 110)
-  
+  resetButton.position(windowWidth / 2 - 50, 100); // coloca el botón de reinicio en la posición (20, 110)
+
   resetButton = createButton('Guardar'); // crea el botón de reinicio con el texto 'Reiniciar' 
   resetButton.mousePressed(savedata); // llama a la función resetAnimation cuando se presiona el botón de reinicio 
   resetButton.style('font-size', '20px'); // Cambia el tamaño del texto en el botón
   resetButton.size(120, 40); // Cambia el tamaño del botón en píxeles
-  resetButton.position(windowWidth/2+300, 100); // coloca el botón de reinicio en la posición (20, 110)
+  resetButton.position(windowWidth / 2 + 300, 100); // coloca el botón de reinicio en la posición (20, 110)
+
+
+  soporte=new Soporte();
+  cuerda = new Cuerda(0, 0); // crea el objeto cuerda
+  bloque = new Bloque(-w / 2, l - h / 2,  MSlider.value()); // crea el objeto bloque
+  bala = new Bala(v_bSlider.value(), mSlider.value()); // crea el objeto bala
+
 
 }
 
 function draw() {
+
   translate(windowWidth / 2, windowHeight / 2); // coloca el origen en el centro
   background(250, 250, 210); // fondo blanco
-
   // Actualiza los valores de M, m y v_b desde los deslizadores
-  M = MSlider.value();  // actualiza el valor de M desde el deslizador de la masa del bloque 
+  M = MSlider.value(); // actualiza el valor de M desde el deslizador de la masa del bloque 
   m = mSlider.value(); // actualiza el valor de m desde el deslizador de la masa de la bala
   v_b = v_bSlider.value(); // actualiza el valor de v_b desde el deslizador de la velocidad de la bala
-
+  
+  soporte.show(); // muestra el soporte
   bloque.show(); // muestra el bloque
-  cuerda.show();  // muestra la cuerda
+  cuerda.show(); // muestra la cuerda
 
-  if (bala.colision()) { // si la bala colisiona con el bloque
-    t=0;
+  if(bala.colision()){ // si la bala colisiona con el bloque
+
+    t = 0;
     bloque.move(); // mueve el bloque
     cuerda.move(bloque.x, bloque.y); // mueve la cuerda
+    /*plotx = new GPlot(this); // Se crea la grafica
+    plotx.setPos(0, 0); // Posicion de la grafica
+    plotx.setOuterDim(width / 2, height / 2); // Dimension de la grafica
+    plotx.setPoints(TT); // Puntos a graficar
+    plotv.setPoints(HH); // Puntos a graficar
+    plotx.setTitleText("Posicion vs tiempo en la caida de la pelota"); //titulo de la grafica
+    plotx.getXAxis().setAxisLabelText("Tiempo"); //titulo del eje x
+    plotx.getYAxis().setAxisLabelText("Posición"); //titulo del eje 
+    plotx.defaultDraw(); //Se muestra la grafica*/
+
   } else { // si la bala no colisiona con el bloque
     bala.move(); // mueve la bala
     bala.show(); // muestra la bala
   }
 }
 
+
+
 let BloqueV = function (x, y, m, T, H) { // crea el objeto bloque
   this.x = x; // posición en x del bloque 
   this.y = y; // posición en y del bloque 
   this.m = m; // masa del bloque
- 
+
   let t = 0; // tiempo 
   let theta = 0; // ángulo de oscilación del bloque 
 
-
   this.show = function () { // muestra el bloque 
     noStroke(); // sin borde 
-    fill(139, 69, 19); // Color marrón para el bloque
+    fill(255, 105, 180); // Color rosa para el bloque
     rect(this.x, this.y, w, h); // rectángulo con esquinas en (this.x, this.y) y (this.x + w, this.y + h)
   }
 
-let iterationCount = 0; // Counter for the number of iterations
+  let iterationCount = 0; // Counter for the number of iterations
 
-this.move = function () {
-  if (iterationCount < 100) {
-    T.push(t);
-    theta = ((m * v_b) / ((m + M) * l * omega)) * Math.sin(omega * t); // calcula el ángulo de oscilación del bloque 
+  this.move = function () {
+    if (iterationCount < 100) {
+      T.push(t);
+      theta = ((m * v_b) / ((m + M) * l * omega)) * Math.sin(omega * t); // calcula el ángulo de oscilación del bloque 
 
-    this.x = l * Math.sin(theta) - w / 2; // actualiza la posición en x del bloque 
-    this.y = l * Math.cos(theta) - h / 2; // actualiza la posición en y del bloque
-    H.push(l*(1- Math.cos(theta)));
-    
-    t = t + dt; // incrementa el tiempo en dt
+      this.x = l * Math.sin(theta) - w / 2; // actualiza la posición en x del bloque 
+      this.y = l * Math.cos(theta) - h / 2; // actualiza la posición en y del bloque
+      H.push(l * (1 - Math.cos(theta)));
 
-    iterationCount++; // Increment the iteration counter
+      t = t + dt; // incrementa el tiempo en dt
+
+      iterationCount++; // Increment the iteration counter
+    }
+
+    // file writer once in the infinite loop
+    else if (iterationCount == 100) {
+
+      const tArray = T; //bloque.getTArray();
+      const hArray = H; //bloque.getHArray();
+
+      // Combine tArray and hArray into a single array of arrays
+      const combinedData = tArray.map((t, index) => [t, hArray[index]]);
+
+      // Convert combinedData to CSV format
+      const csvContent = combinedData.map(row => row.join(',')).join('\n');
+
+      // Create a Blob containing the CSV data
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+
+      // Create a download link for the Blob
+      const url = URL.createObjectURL(blob);
+
+      // Create an anchor element for the download link
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'data.csv'; // Specify the file name
+
+      // Trigger a click event on the anchor element to start the download
+      a.click();
+
+      // Clean up by revoking the URL object
+      URL.revokeObjectURL(url);
+      iterationCount++;
+    }
   }
-
-  // file writer once in the infinite loop
-  else if (iterationCount==100) { 
-
-  const tArray = T; //bloque.getTArray();
-  const hArray = H; //bloque.getHArray();
-  
-  // Combine tArray and hArray into a single array of arrays
-  const combinedData = tArray.map((t, index) => [t, hArray[index]]);
-
-  // Convert combinedData to CSV format
-  const csvContent = combinedData.map(row => row.join(',')).join('\n');
-
-  // Create a Blob containing the CSV data
-  const blob = new Blob([csvContent], { type: 'text/csv' });
-
-  // Create a download link for the Blob
-  const url = URL.createObjectURL(blob);
-
-  // Create an anchor element for the download link
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'data.csv'; // Specify the file name
-
-  // Trigger a click event on the anchor element to start the download
-  a.click();
-
-  // Clean up by revoking the URL object
-  URL.revokeObjectURL(url);
-  iterationCount++;}
 }
 
-}
+let Bloque=function(x, y, m){ // crea el objeto bloque
 
-
-let Bloque = function (x, y, m) {// crea el objeto bloque
   this.x = x; // posición en x del bloque 
   this.y = y; // posición en y del bloque 
   this.m = m; // masa del bloque
- 
+  
   let t = 0; // tiempo 
   let theta = 0; // ángulo de oscilación del bloque
-  
+  let HH=[];
+  let TT=[];
 
   this.show = function () { // muestra el bloque 
     noStroke(); // sin borde 
-    fill(139, 69, 19); // Color marrón para el bloque
+    fill(255, 105, 180); // Color rosa para el bloque
     rect(this.x, this.y, w, h); // rectángulo con esquinas en (this.x, this.y) y (this.x + w, this.y + h)
   }
 
-let iterationCount = 0; // Counter for the number of iterations
-
-this.move = function () {
-
+  this.move = function(){
+    TT.push(t);
     theta = ((m * v_b) / ((m + M) * l * omega)) * Math.sin(omega * t); // calcula el ángulo de oscilación del bloque 
-
     this.x = l * Math.sin(theta) - w / 2; // actualiza la posición en x del bloque 
     this.y = l * Math.cos(theta) - h / 2; // actualiza la posición en y del bloque
-
+    HH.push(l * (1 - Math.cos(theta)));
     t = t + dt; // incrementa el tiempo en dt
-}
+  }
 }
 
-
-let Cuerda = function (x1, y1) { // crea el objeto cuerda 
+let Cuerda = function(x1, y1){ // crea el objeto cuerda 
   this.x0 = 0; // posición en x del extremo fijo de la cuerda
   this.y0 = 0; // posición en y del extremo fijo de la cuerda
   this.x1 = x1; // posición en x del extremo libre de la cuerda
@@ -181,7 +196,7 @@ let Cuerda = function (x1, y1) { // crea el objeto cuerda
     stroke(255, 0, 0); // Color rojo para la cuerda
     strokeWeight(5); // grosor de la cuerda  en píxeles
 
-    if (this.y1 == 0) {  // si la cuerda está en reposo
+    if (this.y1 == 0) { // si la cuerda está en reposo
       line(this.x0, this.y0, this.x1, -h / 2 + l); // línea con extremos en (this.x0, this.y0) y (this.x1, -h / 2 + l)
     } else { // si la cuerda está en movimiento
       line(this.x0, this.y0, this.x1 + w / 2, this.y1 + h / 2); // línea con extremos en (this.x0, this.y0) y (this.x1 + w / 2, this.y1 + h / 2)
@@ -189,8 +204,21 @@ let Cuerda = function (x1, y1) { // crea el objeto cuerda
   }
 
   this.move = function (x, y) { // mueve la cuerda
-    this.x1 = x;  // actualiza la posición en x del extremo libre de la cuerda
+    this.x1 = x; // actualiza la posición en x del extremo libre de la cuerda
     this.y1 = y; // actualiza la posición en y del extremo libre de la cuerda
+  }
+}
+
+
+let Soporte= function(){
+
+  let LL=100;
+  this.show = function () { // muestra el bloque
+
+    stroke(0); // Color rojo para la cuerda
+    strokeWeight(10); // grosor de la cuerda  en píxeles
+    line(-LL,0,LL,0); // línea con extremos en (this.x0, this.y0) y (this.x1, -h / 2 + l)
+
   }
 }
 
@@ -217,7 +245,7 @@ let Bala = function (vx, m) { // crea el objeto bala
   }
 }
 
-function positionSlider(slider, label, x, y, sliderWidth) {  // crea un deslizador con una etiqueta en formato LaTeX en la posición (x, y)
+function positionSlider(slider, label, x, y, sliderWidth) { // crea un deslizador con una etiqueta en formato LaTeX en la posición (x, y)
   slider.position(x, y); // Ajusta la posición del deslizador
   slider.style('width', sliderWidth + 'px'); // Ajusta el ancho del deslizador
 
@@ -231,19 +259,19 @@ function positionSlider(slider, label, x, y, sliderWidth) {  // crea un deslizad
   valueElement.style('font-weight', 'bold'); // Opcional: haz que el valor sea más visible
 
   // Actualiza el valor numérico cada vez que se cambia el slider
-  slider.input(function() { // cuando se cambia el valor del deslizador
+  slider.input(function () { // cuando se cambia el valor del deslizador
     valueElement.html(slider.value()); // actualiza el valor numérico
   });
 }
 
-function resetAnimation() { // reinicia la animación 
+function resetAnimation() { // reinicia la animación
 
-  mSlider.value(m); 
-  MSlider.value(M);
-  v_bSlider.value(v_b);
+  m=mSlider.value();
+  M=MSlider.value();
+  v_b=v_bSlider.value();
 
   // Restablece los objetos y valores necesarios
-  bloque = new Bloque(-w / 2, l - h / 2, M); 
+  bloque = new Bloque(-w / 2, l - h / 2, M);
   cuerda = new Cuerda(0, 0);
   bala = new Bala(v_b, m);
 
@@ -251,15 +279,17 @@ function resetAnimation() { // reinicia la animación
 }
 
 function savedata() { // reinicia la animación 
-  let H=['h'];
-  let T=['t'];
+  let H = ['h'];
+  let T = ['t'];
+
+  m=mSlider.value();
+  M=MSlider.value();
+  v_b=v_bSlider.value();
+
   // Restablece los objetos y valores necesarios
   bloque = new BloqueV(-w / 2, l - h / 2, M, T, H); //this function calls the file writer
   cuerda = new Cuerda(0, 0);
   bala = new Bala(v_b, m);
 
   // Restablece los deslizadores a sus valores iniciales
-  mSlider.value(m); 
-  MSlider.value(M);
-  v_bSlider.value(v_b);
 };
