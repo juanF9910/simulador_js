@@ -23,6 +23,8 @@ let mSlider, MSlider, v_bSlider, resetButton;
 
 let ended = false;
 
+let TT=[];
+let HH=[];
 
 function setup() {
 
@@ -48,14 +50,14 @@ function setup() {
   resetButton = createButton('Guardar'); // crea el botón de reinicio con el texto 'Reiniciar' 
   resetButton.mousePressed(savedata); // llama a la función resetAnimation cuando se presiona el botón de reinicio 
   resetButton.style('font-size', '20px'); // Cambia el tamaño del texto en el botón
-  resetButton.size(120, 40); // Cambia el tamaño del botón en píxeles
-  resetButton.position(windowWidth / 2 + 300, 100); // coloca el botón de reinicio en la posición (20, 110)
+  resetButton.size(130, 50); // Cambia el tamaño del botón en píxeles
+  resetButton.position(windowWidth / 2 + 200, 100); // coloca el botón de reinicio en la posición (20, 110)
 
 
   soporte=new Soporte();
   cuerda = new Cuerda(0, 0); // crea el objeto cuerda
   bloque = new Bloque(-w / 2, l - h / 2,  MSlider.value()); // crea el objeto bloque
-  bala = new Bala(v_bSlider.value(), mSlider.value()); // crea el objeto bala
+  bala = new Bala(v_bSlider.value(), mSlider.value()); // crea el objeto bal
 
 
 }
@@ -74,19 +76,9 @@ function draw() {
   cuerda.show(); // muestra la cuerda
 
   if(bala.colision()){ // si la bala colisiona con el bloque
-
     t = 0;
-    bloque.move(); // mueve el bloque
-    cuerda.move(bloque.x, bloque.y); // mueve la cuerda
-    /*plotx = new GPlot(this); // Se crea la grafica
-    plotx.setPos(0, 0); // Posicion de la grafica
-    plotx.setOuterDim(width / 2, height / 2); // Dimension de la grafica
-    plotx.setPoints(TT); // Puntos a graficar
-    plotv.setPoints(HH); // Puntos a graficar
-    plotx.setTitleText("Posicion vs tiempo en la caida de la pelota"); //titulo de la grafica
-    plotx.getXAxis().setAxisLabelText("Tiempo"); //titulo del eje x
-    plotx.getYAxis().setAxisLabelText("Posición"); //titulo del eje 
-    plotx.defaultDraw(); //Se muestra la grafica*/
+    bloque.move(); // mueve el bloq
+    cuerda.move(bloque.x, bloque.y); 
 
   } else { // si la bala no colisiona con el bloque
     bala.move(); // mueve la bala
@@ -184,6 +176,8 @@ let Bloque=function(x, y, m){ // crea el objeto bloque
     HH.push(l * (1 - Math.cos(theta)));
     t = t + dt; // incrementa el tiempo en dt
   }
+
+
 }
 
 let Cuerda = function(x1, y1){ // crea el objeto cuerda 
