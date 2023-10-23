@@ -23,8 +23,8 @@ let mSlider, MSlider, v_bSlider, resetButton;
 
 //let ended = false;
 
-let T = [];
-let H = [];
+let TT = [];
+let HH = [];
 
 let mValueElement, MValueElement, v_bValueElement;
 
