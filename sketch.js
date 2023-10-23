@@ -70,7 +70,7 @@ v_bSlider.input(() => {
 });
 
   // Crea el botón de reinicio
-  resetButton = createButton('Start');// crea el botón de reinicio con el texto 'Reiniciar' 
+  resetButton = createButton('Reiniciar');// crea el botón de reinicio con el texto 'Reiniciar' 
   resetButton.mousePressed(resetAnimation(m,M,v_b)); // llama a la función resetAnimation cuando se presiona el botón de reinicio 
   resetButton.style('font-size', '20px');// Cambia el tamaño del texto en el botón
   resetButton.size(120, 40); // Cambia el tamaño del botón en píxeles
@@ -93,7 +93,7 @@ v_bSlider.input(() => {
 function draw() {
 
   translate(windowWidth / 2, windowHeight / 2); // coloca el origen en el centro
-    background(207, 150, 450); // fondo blanco
+    background(207, 150, 450); // color fondo
   // Actualiza los valores de M, m y v_b desde los deslizadores
   M = MSlider.value(); // actualiza el valor de M desde el deslizador de la masa del bloque 
   m = mSlider.value(); // actualiza el valor de m desde el deslizador de la masa de la bala
@@ -218,7 +218,7 @@ let Cuerda = function(x1, y1){ // crea el objeto cuerda
   this.y1 = y1; // posición en y del extremo libre de la cuerda
 
   this.show = function () { // muestra la cuerda
-    stroke(255, 255, 255); // Color rojo para la cuerda
+    stroke(255, 255, 255); // Color para la cuerda
     strokeWeight(5); // grosor de la cuerda  en píxeles
 
     if (this.y1 == 0) { // si la cuerda está en reposo
@@ -240,7 +240,7 @@ let Soporte= function(){
   let LL=100;
   this.show = function () { // muestra el bloque
 
-    stroke(0); // Color rojo para la cuerda
+    stroke(0); // Color 
     strokeWeight(10); // grosor de la cuerda  en píxeles
     line(-LL,0,LL,0); // línea con extremos en (this.x0, this.y0) y (this.x1, -h / 2 + l)
 
@@ -255,7 +255,7 @@ let Bala = function (vx, mb) { // crea el objeto bala
 
   this.show = function () { // muestra la bala
     noStroke(); // sin borde
-    fill(212, 175, 55); // Color azul para la bala
+    fill(212, 175, 55); // Color para la bala
     ellipse(-L + xb, l, a, b); // elipse con centro en (-L + xb, l) y radios a y b
   }
 
